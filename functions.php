@@ -1,46 +1,68 @@
 <?php
 require 'config.php';
 
-function getListDomains($connect)
+// System //
+function initHook($dev = true, $install = true)
 {
-    $request = mysqli_query($connect, "SELECT `domain_name` FROM `domain`");
-    $result = mysqli_fetch_all($request);
+
+    $dev ? $url = DEVELOP_URL . '/index.php' : $url = SITE_URL . '/index.php';
+    $install ? $hook = "/setWebhook?" : $hook = '/deleteWebhook?';
+
+    $data = array(
+        "url" => $url . "/test.php",
+    );
+
+    $ch = curl_init("https://api.telegram.org/bot" . TG_TOKEN . $hook . http_build_query($data)); // Удалить хук
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    echo $url . '<br>';
+    return $response;
+}
+
+// Data Base //
+function db()
+{
+    try {
+        return new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . "; charset=utf8", DB_USER, DB_PASS, [
+            PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]);
+    } catch (PDOException $e) {
+        die($e->getMessage());
+    }
+}
+function db_query($sql = '')
+{
+    if (empty($sql)) return false;
+    return db()->query($sql);
+}
+function db_exec($sql = '')
+{
+    if (empty($sql)) return false;
+    return db()->exec($sql);
+}
+
+// Helpers //
+function getListDomains()
+{
+    $request = db_query("SELECT `domain_name` FROM `domain`")->fetchAll();
+
     $list = [];
-    foreach ($result as $item) {
-        $list[] = $item[0];
+    foreach ($request as $item) {
+        $list[] = $item['domain_name'];
     }
     return $list;
 }
-function getDomainInfo($connect, $domain)
-{
-    $request = mysqli_query($connect, "SELECT * FROM `domain` WHERE `domain_name` LIKE '$domain'");
-    $result = mysqli_fetch_assoc($request);
 
-    $string = "<b>Проект</b>: " . $result["domain_name"] . "\n";
-    $string .= "<b>Админка</b>: " . $result["domain_url"] . "\n";
-    $string .= "<b>Логин</b>: " . $result["wp_login"] . "\n";
-    $string .= "<b>Пароль</b>: " . $result["wp_password"] . "\n";
-    $string .= "<b>Имя БД</b>: " . $result["bd_name"] . "\n";
-    $string .= "<b>Юзер БД</b>: " . $result["bd_user"] . "\n";
-    $string .= "<b>Пароль БД</b>: " . $result["bd_password"];
-
-    return $string;
-}
-
-function tgKeybordDomains($db_connect)
-{
-    $list = getListDomains($db_connect);
-    $arr = [];
-
-    foreach ($list as $item) {
-        $arr[] = [
-            'text' => $item,
-            'callback_data' => strtolower($item),
-        ];
-    }
-    return $arr;
-}
-
+// Telegram //
+// Методы
 function tgSendMessage($query)
 {
     $ch = curl_init('https://api.telegram.org/bot' . TG_TOKEN . '/sendMessage?' . http_build_query($query));
@@ -49,7 +71,88 @@ function tgSendMessage($query)
     curl_setopt($ch, CURLOPT_HEADER, false);
     $result = curl_exec($ch);
     curl_close($ch);
+}
 
-    // $jsonDate = json_decode($result, true);
-    // var_dump($jsonDate);
+// Включение клавиатуры внизу
+function tgSendKeyboard()
+{
+    $data = [
+        'chat_id' => TG_USER_ID,
+        'text' => 'Клавиатура добавлена...',
+        'reply_markup' => json_encode(array(
+            'keyboard' => array(
+                array(
+                    array(
+                        'text' => 'Список доменов',
+                        'callback_data' => 'list',
+                    ),
+                    array(
+                        'text' => 'Убрать клавиатуру',
+                        'callback_data' => 'keyboard',
+                    )
+                )
+            ),
+            'one_time_keyboard' => TRUE,
+            'resize_keyboard' => TRUE,
+        )),
+    ];
+
+    tgSendMessage($data);
+}
+
+// Кнопки клавиатуры внизу 
+function tgKeyboardShowDomains()
+{
+
+    $domains = getListDomains();
+    $arr = [];
+
+    foreach ($domains as $domain) {
+        $arr[] = [
+            'text' => $domain,
+            'callback_data' => strtolower($domain),
+        ];
+    }
+
+    $arr = array_chunk($arr, 3);
+
+    $data = [
+        'chat_id' => TG_USER_ID,
+        'text' => 'Список доменов:',
+        'parse_mode' => 'html',
+        'reply_markup' => json_encode(
+            [
+                'inline_keyboard' => $arr,
+            ],
+        ),
+    ];
+
+    tgSendMessage($data);
+}
+function tgKeyboardRemove()
+{
+    $query = [
+        'chat_id' => TG_USER_ID,
+        'text' => 'Клавиатура убрана...',
+        'reply_markup' => json_encode([
+            'remove_keyboard' => true
+        ]),
+    ];
+    tgSendMessage($query);
+}
+
+// Кнопки под сообщением
+function getDomainInfo($domain)
+{
+    $request = db_query("SELECT * FROM `domain` WHERE `domain_name` LIKE '$domain'")->fetch();
+
+    $string = "<b>Проект</b>: " . $request["domain_name"] . "\n";
+    $string .= "<b>Админка</b>: " . $request["domain_url"] . "\n";
+    $string .= "<b>Логин</b>: " . $request["wp_login"] . "\n";
+    $string .= "<b>Пароль</b>: " . $request["wp_password"] . "\n";
+    $string .= "<b>Имя БД</b>: " . $request["bd_name"] . "\n";
+    $string .= "<b>Юзер БД</b>: " . $request["bd_user"] . "\n";
+    $string .= "<b>Пароль БД</b>: " . $request["bd_password"];
+
+    return $string;
 }

@@ -1,7 +1,8 @@
 <?php
 
 // Server
-define('SITE_URL', $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']);
+define('SITE_URL', 'https://' . $_SERVER['HTTP_HOST']);
+define('DEVELOP_URL', 'https://' . (!empty($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : 'error'));
 
 // Debug
 ini_set('error_reporting', E_ALL);
@@ -17,12 +18,3 @@ define('DB_PASS', 'admin');
 // TG
 define('TG_TOKEN', '5983231976:AAH7BSy3HG-WP5922U0mUXLGRbPK1Uq_xhY');
 define('TG_USER_ID', '483212254');
-
-// Connect
-$db_connect = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-if (!$db_connect) {
-    die('Ошибка подключения к базе данных.');
-} else {
-    echo 'good';
-}
