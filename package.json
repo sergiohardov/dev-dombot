@@ -1,0 +1,22 @@
+{
+  "name": "dombot",
+  "version": "1.0.0",
+  "description": "Bot for domains access",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergiohardov/dev-dombot.git"
+  },
+  "author": "sergiohardov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sergiohardov/dev-dombot/issues"
+  },
+  "homepage": "https://github.com/sergiohardov/dev-dombot#readme",
+  "devDependencies": {
+    "localtunnel": "^2.0.2"
+  }
+}
