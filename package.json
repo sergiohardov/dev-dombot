@@ -4,7 +4,8 @@
   "description": "Bot for domains access",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "lt": "./node_modules/.bin/lt"
   },
   "repository": {
     "type": "git",
