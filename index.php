@@ -1,6 +1,6 @@
 <?php
 require 'functions.php';
-// require 'inithook.php';
+require 'inithook.php';
 require 'loggdata.php';
 
 
