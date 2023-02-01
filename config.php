@@ -10,7 +10,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 // Database
-define('DB_HOST', '192.168.1.103');
+define('DB_HOST', '192.168.1.108');
 define('DB_NAME', 'dombot_bd');
 define('DB_USER', 'admin');
 define('DB_PASS', 'admin');

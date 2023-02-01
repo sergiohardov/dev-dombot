@@ -5,11 +5,11 @@ require 'config.php';
 function initHook($dev = true, $install = true)
 {
 
-    $dev ? $url = DEVELOP_URL . '/index.php' : $url = SITE_URL . '/index.php';
+    $dev ? $url = DEVELOP_URL : $url = SITE_URL;
     $install ? $hook = "/setWebhook?" : $hook = '/deleteWebhook?';
 
     $data = array(
-        "url" => $url . "/test.php",
+        "url" => $url . "/index.php",
     );
 
     $ch = curl_init("https://api.telegram.org/bot" . TG_TOKEN . $hook . http_build_query($data)); // Удалить хук

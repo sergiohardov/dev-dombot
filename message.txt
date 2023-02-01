@@ -1,9 +1,9 @@
-2023-02-01 02:04:31 Array
+2023-02-01 02:45:47 Array
 (
-    [update_id] => 591679092
-    [callback_query] => Array
+    [update_id] => 591679109
+    [message] => Array
         (
-            [id] => 2075380831484478082
+            [message_id] => 404
             [from] => Array
                 (
                     [id] => 483212254
@@ -14,72 +14,17 @@
                     [language_code] => ru
                 )
 
-            [message] => Array
+            [chat] => Array
                 (
-                    [message_id] => 384
-                    [from] => Array
-                        (
-                            [id] => 5983231976
-                            [is_bot] => 1
-                            [first_name] => Portfolio Domains Data
-                            [username] => sergio_portfolio_bot
-                        )
-
-                    [chat] => Array
-                        (
-                            [id] => 483212254
-                            [first_name] => Sergio
-                            [last_name] => Hardov
-                            [username] => sergiohardov
-                            [type] => private
-                        )
-
-                    [date] => 1675206266
-                    [text] => Список доменов:
-                    [reply_markup] => Array
-                        (
-                            [inline_keyboard] => Array
-                                (
-                                    [0] => Array
-                                        (
-                                            [0] => Array
-                                                (
-                                                    [text] => Spark
-                                                    [callback_data] => spark
-                                                )
-
-                                            [1] => Array
-                                                (
-                                                    [text] => Plumbing
-                                                    [callback_data] => plumbing
-                                                )
-
-                                            [2] => Array
-                                                (
-                                                    [text] => Socialeconomy
-                                                    [callback_data] => socialeconomy
-                                                )
-
-                                        )
-
-                                    [1] => Array
-                                        (
-                                            [0] => Array
-                                                (
-                                                    [text] => Carpool
-                                                    [callback_data] => carpool
-                                                )
-
-                                        )
-
-                                )
-
-                        )
-
+                    [id] => 483212254
+                    [first_name] => Sergio
+                    [last_name] => Hardov
+                    [username] => sergiohardov
+                    [type] => private
                 )
 
-            [chat_instance] => 78019016132494487
-            [data] => carpool
+            [date] => 1675208688
+            [text] => Список доменов
         )
 
 )
